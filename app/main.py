@@ -7,21 +7,18 @@ class Deck:
 
 class Ship:
     def __init__(self, start: tuple, end: tuple) -> None:
-        self.start = start
-        self.end = end
         self.decks = []
-        self.is_drowned = False
 
-        if start[0] == end[0]:  # horizontal ship
+        if start[0] == end[0]:
             row = start[0]
             for column in range(start[1], end[1] + 1):
                 self.decks.append(Deck(row, column))
-        else:  # vertical ship
+        else:
             column = start[1]
             for row in range(start[0], end[0] + 1):
                 self.decks.append(Deck(row, column))
 
-    def get_deck(self, row: int, column: int) -> Deck | None:
+    def get_deck(self, row: int, column: int) -> bool | None:
         for deck in self.decks:
             if deck.row == row and deck.column == column:
                 return deck
@@ -31,11 +28,13 @@ class Ship:
         deck = self.get_deck(row, column)
         if deck is None:
             return "Miss!"
+
         deck.is_alive = False
+
         for deck in self.decks:
             if deck.is_alive:
                 return "Hit!"
-        self.is_drowned = True
+
         return "Sunk!"
 
 
@@ -62,15 +61,19 @@ class Battleship:
 
     def fire(self, location: tuple) -> str:
         row, column = location
+
         if (row, column) not in self.ship_positions:
             return "Miss!"
+
         ship = self.ship_positions[(row, column)]
         result = ship.fire(row, column)
+
         if result == "Hit!":
             self.field[row][column] = "*"
         elif result == "Sunk!":
             for deck in ship.decks:
                 self.field[deck.row][deck.column] = "x"
+
         return result
 
     def print_field(self) -> None:
